@@ -1,16 +1,13 @@
 package com.chathurangaonline.examples.dao.impl;
 
 import com.chathurangaonline.examples.dao.GenericDao;
-import com.chathurangaonline.examples.model.Customer;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.service.ServiceRegistry;
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -25,10 +22,6 @@ public  class GenericDaoImpl<T,PK extends Serializable>  implements GenericDao<T
         this.entityClass = entityClass;
     }
 
-//    public GenericDaoImpl(){
-//        this.entityClass = new T();
-//    }
-
     public SessionFactory getSessionFactory(){
         if(sessionFactory==null){
             Configuration configuration = new Configuration();
@@ -41,17 +34,17 @@ public  class GenericDaoImpl<T,PK extends Serializable>  implements GenericDao<T
 
     public   Session getSession(){
         SessionFactory sessionFactory = this.getSessionFactory();
-        System.out.println(" session factory obj ["+sessionFactory+"]");
         return sessionFactory.openSession();
     }
 
     @Override
     public T findById(Serializable id) {
-        Session session = this.getSession();
-        Criteria criteria = session.createCriteria(entityClass);
-        System.out.println(" criteria ["+criteria+"]");
-        T object =  (T)session.get(entityClass,id);
-        System.out.println(" ["+object+"] ");
+        T object = null;
+        if(id!=null){
+            Session session = this.getSession();
+            object =  (T)session.get(entityClass,id);
+            return object;
+        }
         return object;
     }
 
@@ -64,12 +57,12 @@ public  class GenericDaoImpl<T,PK extends Serializable>  implements GenericDao<T
             session.beginTransaction();
             session.save(object);
             session.getTransaction().commit();
-            System.out.println(" saved ");
         }
         catch (HibernateException ex){
             if(session!=null && session.getTransaction()!=null){
                 session.getTransaction().rollback();
             }
+            throw ex;
         }
         finally {
             if(session!=null){
@@ -77,6 +70,7 @@ public  class GenericDaoImpl<T,PK extends Serializable>  implements GenericDao<T
             }
         }
     }
+
 
     @Override
     public List<T> findAll() {
@@ -89,9 +83,30 @@ public  class GenericDaoImpl<T,PK extends Serializable>  implements GenericDao<T
     }
 
     @Override
-    public void delete(T t) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void delete(T object) {
+        if(object!=null){
+            Session session = null;
+            try{
+                session = this.getSessionFactory().openSession();
+                session.beginTransaction();
+                session.delete(object);
+                session.getTransaction().commit();
+            }
+            catch (HibernateException ex){
+                if(session!=null && session.getTransaction()!=null){
+                    session.getTransaction().rollback();
+                }
+                throw ex;
+            }
+            finally {
+                if(session!=null){
+                    session.close();
+                }
+            }
+        }
     }
+
+
 
     public Class<T> getEntityClass() {
         return entityClass;

@@ -19,18 +19,27 @@ public class CustomerDaoImpl extends GenericDaoImpl<Customer,Long> implements Cu
     }
 
 
+    /**
+     * <p>
+     *     getting a list of customers whose status is isActive
+     * </p>
+     * @return  list of customer instances as {@link List<Customer>}
+     */
     @Override
     public List<Customer> getActiveCustomers() {
-        System.out.println(" started");
-        GenericDaoImpl genericDao = new GenericDaoImpl(Customer.class);
-        System.out.println(" gene ["+genericDao+"]");
-//        sessionFactory = genericDao.getSessionFactory();
-        Session session = sessionFactory.openSession();
-        System.out.println(" session in dao impl ["+session+"]");
-        Criteria criteria = session.createCriteria(Customer.class).add(Restrictions.eq("isActive",true));
-        List<Customer> customerList = (List<Customer>) criteria.list();
-        System.out.println(" size ["+customerList.size()+"]");
-        //closing the session
-        return null;
+        Session session = null;
+        List<Customer> customerList = null;
+        try{
+            session = sessionFactory.openSession();
+            Criteria criteria = session.createCriteria(Customer.class).add(Restrictions.eq("isActive",true));
+            customerList = (List<Customer>) criteria.list();
+            System.out.println(" size ["+customerList.size()+"]");
+        }
+        finally {
+            if(session!=null){
+                session.close();
+            }
+        }
+        return customerList;
     }
 }

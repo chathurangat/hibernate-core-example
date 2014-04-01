@@ -12,7 +12,7 @@ public class Customer implements Serializable{
     @Column(name = "customer_id")
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name",nullable = false)
     private String customerName;
 
     @Column(name = "address")
