@@ -27,12 +27,16 @@ public class CustomerDaoImplTest {
         Customer customer = new Customer();
         customer.setCustomerName("chathuranga tennakoon");
         customer.setCustomerAddress("www.chathurangaonline.com");
+        customer.setActive(true);
         customerDao.save(customer);
 
         Customer customerRetrieved = (Customer)customerDao.findById(customer.getCustomerID());
         Assert.assertNotNull(customerRetrieved);
         System.out.println(" customer name ["+customerRetrieved.getCustomerName()+"]");
+        customerDao.getActiveCustomers();
     }
+
+
 
 
     private CustomerDao getInstance(){

@@ -31,6 +31,7 @@
 
         <property name="hbm2ddl.auto">create</property>
 
+        <!--annotation based mapping-->
         <mapping class="com.chathurangaonline.examples.model.Customer"/>
 
         <!--<mapping resource="org/hibernate/tutorial/domain/Event.hbm.xml"/>-->

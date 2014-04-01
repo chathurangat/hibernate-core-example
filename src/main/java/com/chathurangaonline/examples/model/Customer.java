@@ -18,6 +18,10 @@ public class Customer implements Serializable{
     @Column(name = "address")
     private String customerAddress;
 
+
+    @Column(name = "current_status")
+    private boolean isActive;
+
     public Customer() {}
 
     public String getCustomerAddress() {
@@ -37,5 +41,13 @@ public class Customer implements Serializable{
     }
     public void setCustomerName(String customerName) {
         this.customerName = customerName;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }

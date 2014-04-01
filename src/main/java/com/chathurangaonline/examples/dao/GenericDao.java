@@ -1,8 +1,9 @@
 package com.chathurangaonline.examples.dao;
 
+import java.io.Serializable;
 import java.util.List;
 
-public interface GenericDao<T>{
+public interface GenericDao<T,PK extends Serializable>{
 
     /**
      * <p>
@@ -11,7 +12,7 @@ public interface GenericDao<T>{
      * @param id
      * @return
      */
-    T findById(Long id);
+    T findById(Serializable id);
 
     void save(T t);
 

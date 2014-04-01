@@ -10,50 +10,51 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.service.ServiceRegistry;
+
+import java.io.Serializable;
 import java.util.List;
 
 
-public  class GenericDaoImpl<T>  implements GenericDao<T>{
+public  class GenericDaoImpl<T,PK extends Serializable>  implements GenericDao<T,PK>{
 
     private Class<T> entityClass;
+
+    private static SessionFactory sessionFactory;
 
     public GenericDaoImpl(Class<T> entityClass) {
         this.entityClass = entityClass;
     }
 
-    private SessionFactory getSessionFactory(){
-        Configuration configuration = new Configuration();
-        configuration.configure();
-        ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
-        return configuration.buildSessionFactory(serviceRegistry);
+//    public GenericDaoImpl(){
+//        this.entityClass = new T();
+//    }
+
+    public SessionFactory getSessionFactory(){
+        if(sessionFactory==null){
+            Configuration configuration = new Configuration();
+            configuration.configure();
+            ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+            sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+        }
+        return sessionFactory;
     }
 
-    private  Session getSession(){
+    public   Session getSession(){
         SessionFactory sessionFactory = this.getSessionFactory();
+        System.out.println(" session factory obj ["+sessionFactory+"]");
         return sessionFactory.openSession();
     }
 
     @Override
-    public T findById(Long id) {
-
-//        Session session = this.getSession();
-//        session.beginTransaction();
-//        Criteria criteria = session.createCriteria(entityClass);
-//        criteria.setMaxResults(1);
-//        criteria.add(Restrictions.eq("id",id));
-//        return  (T)(criteria.list().get(0));
-
-
-
+    public T findById(Serializable id) {
         Session session = this.getSession();
-//        session.beginTransaction();
-        System.out.println("Session ["+session+"]");
-        System.out.println(" entity class ["+entityClass+"]");
+        Criteria criteria = session.createCriteria(entityClass);
+        System.out.println(" criteria ["+criteria+"]");
         T object =  (T)session.get(entityClass,id);
-//        session.getTransaction().commit();
+        System.out.println(" ["+object+"] ");
         return object;
-
     }
+
 
     @Override
     public void save(T object) {
@@ -63,6 +64,7 @@ public  class GenericDaoImpl<T>  implements GenericDao<T>{
             session.beginTransaction();
             session.save(object);
             session.getTransaction().commit();
+            System.out.println(" saved ");
         }
         catch (HibernateException ex){
             if(session!=null && session.getTransaction()!=null){
