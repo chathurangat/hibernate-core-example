@@ -1,6 +1,7 @@
 package com.chathurangaonline.examples.dao.impl;
 
 import com.chathurangaonline.examples.dao.GenericDao;
+import com.chathurangaonline.examples.exception.ApplicationException;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -62,7 +63,7 @@ public  class GenericDaoImpl<T,PK extends Serializable>  implements GenericDao<T
             if(session!=null && session.getTransaction()!=null){
                 session.getTransaction().rollback();
             }
-            throw ex;
+            throw new ApplicationException("ERROR_SAVE",ex);
         }
         finally {
             if(session!=null){
@@ -96,7 +97,7 @@ public  class GenericDaoImpl<T,PK extends Serializable>  implements GenericDao<T
                 if(session!=null && session.getTransaction()!=null){
                     session.getTransaction().rollback();
                 }
-                throw ex;
+                throw new ApplicationException("ERROR_DELETE",ex);
             }
             finally {
                 if(session!=null){

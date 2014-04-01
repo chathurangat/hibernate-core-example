@@ -1,9 +1,10 @@
 package com.chathurangaonline.examples.dao.impl;
 
 import com.chathurangaonline.examples.dao.CustomerDao;
+import com.chathurangaonline.examples.exception.ApplicationException;
 import com.chathurangaonline.examples.model.Customer;
-import junit.framework.Assert;
 import org.hibernate.PropertyValueException;
+import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -30,7 +31,7 @@ public class CustomerDaoImplTest {
      *     this method should throws the {@link PropertyValueException} since the property values are not set properly
      * </p>
      */
-    @Test(expectedExceptions = org.hibernate.PropertyValueException.class)
+    @Test(expectedExceptions = ApplicationException.class)
     public void testSaveEmptyObject() throws Exception{
         Customer customer = new Customer();
         customerDao.save(customer);
@@ -191,7 +192,6 @@ public class CustomerDaoImplTest {
         customerDao.delete(customer2);
         Customer customerDeleted2= customerDao.findById(customer2.getCustomerID());
         Assert.assertNull(customerDeleted2);
-
 
         //delete the customer 3
         customerDao.delete(customer3);
